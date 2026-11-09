@@ -550,6 +550,7 @@ COPY config/local.conf /etc/fonts/local.conf
 COPY config/storage.conf /etc/containers/storage.conf
 COPY config/policy.json /etc/containers/policy.json
 COPY config/registries.conf /etc/containers/registries.conf
+COPY config/containers.conf /etc/containers/containers.conf
 # Pre-create the default podman network with dns_enabled=true so container-name
 # resolution works out of the box via aardvark-dns. Without this file, podman
 # auto-creates the default network on first run with dns_enabled=false for
