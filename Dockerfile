@@ -386,6 +386,14 @@ RUN make BUILDTAGS="seccomp exclude_graphdriver_btrfs exclude_graphdriver_device
           ${DESTDIR}${PREFIX}/libexec/podman/quadlet && \
     echo 'podman:' ${PODMAN_VERSION} >> /work/versions.txt
 
+# Podman runs health checks from systemd timers, and the WSLC VM has no systemd,
+# so containers would stay "starting". podman-healthcheck-scheduler runs the
+# checks through the Podman API instead; wslcsession starts it next to the
+# Podman service.
+COPY podman-healthcheck-scheduler /work/podman-healthcheck-scheduler
+WORKDIR /work/podman-healthcheck-scheduler
+RUN CGO_ENABLED=0 go build -trimpath -ldflags '-s -w' -o ${DESTDIR}${PREFIX}/libexec/wslc/podman-healthcheck-scheduler .
+
 # Podman 6 requires Netavark 2; Azure Linux 3's packaged Netavark is too old.
 ARG NETAVARK_VERSION=v2.1.0
 RUN tdnf install -y protobuf
