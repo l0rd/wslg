@@ -35,8 +35,9 @@ index a829510..d64c1c6 100644
  		sg.BaseHostsFile = "none"
  	}
 +	sg.Domainname = body.Config.Domainname
+ 	// moby adds host.docker.internal only with --add-host, so the name is left to DNS
+ 	sg.NoHostContainersInternalEntry = true
  
- 	ic := abi.ContainerEngine{Libpod: runtime}
  	report, err := ic.ContainerCreate(r.Context(), sg)
 diff --git a/pkg/specgen/generate/namespaces_linux.go b/pkg/specgen/generate/namespaces_linux.go
 index 70e0a1a..01ad456 100644

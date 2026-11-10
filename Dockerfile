@@ -357,8 +357,16 @@ RUN ./autogen.sh && \
     echo 'crun:' ${CRUN_VERSION} >> /work/versions.txt
 
 # Build podman from source
-ARG PODMAN_VERSION=v6.1.4
-RUN git clone --depth 1 --branch ${PODMAN_VERSION} https://github.com/podman-container-tools/podman.git /work/podman
+# DO NOT MERGE: build the wslc-podman-test branch of the l0rd/podman fork, to
+# test the WSLC fixes. PODMAN_COMMIT, when set, must be the branch tip: it pins
+# the source and invalidates this layer's cache when the branch moves.
+ARG PODMAN_REPO=https://github.com/l0rd/podman.git
+ARG PODMAN_VERSION=wslc-podman-test
+ARG PODMAN_COMMIT=
+RUN git clone --depth 1 --branch ${PODMAN_VERSION} ${PODMAN_REPO} /work/podman && \
+    if [ -n "${PODMAN_COMMIT}" ] && [ "$(git -C /work/podman rev-parse HEAD)" != "${PODMAN_COMMIT}" ]; then \
+        echo "${PODMAN_REPO} ${PODMAN_VERSION} is not at ${PODMAN_COMMIT}" >&2; exit 1; \
+    fi
 WORKDIR /work/podman
 # Podman 6.1.4 includes the exec ConsoleSize and anonymous-volume prune fixes.
 # Honor the container domainname. Unlike dockerd, upstream podman's compat
